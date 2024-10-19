@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aggregate Quotes UI</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if token exists in localStorage
+        const token = localStorage.getItem("token");
+        if (!token) {
+          // Redirect to login page if token is not present
+          window.location.href = "login.html";
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Aggregate Quotes UI</h1>
+    <p>Select a JSON data request to fetch aggregated quotes:</p>
+    <select id="requestType">
+      <option value="singleRequest">Single Parameter Request</option>
+      <option value="batchRequest">Batch Request</option>
+      <option value="multipleBatchRequest">Multiple Batch Request</option>
+    </select>
+    <button onclick="postData()">Send JSON Data</button>
+    <hr />
+    <h2>Response:</h2>
+    <pre id="response"></pre>
+
+    <script>
+      function postData() {
+        const requestType = document.getElementById("requestType").value;
+        let jsonData;
+
+        switch (requestType) {
+          case "singleRequest":
+            jsonData = {
+              singleRequest: {
+                tokenIn: {
+                  amount: "10000000",
+                  denom:
+                    "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                },
+                tokenOut: {
+                  denom:
+                    "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                },
+              },
+            };
+            break;
+          case "batchRequest":
+            jsonData = {
+              batchRequest: [
+                {
+                  tokenIn: {
+                    amount: "10000000",
+                    denom:
+                      "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                  },
+                  tokenOut: {
+                    denom:
+                      "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                  },
+                },
+                {
+                  tokenIn: {
+                    amount: "20000000",
+                    denom:
+                      "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                  },
+                  tokenOut: {
+                    denom:
+                      "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                  },
+                },
+              ],
+            };
+            break;
+          case "multipleBatchRequest":
+            jsonData = {
+              multipleBatchRequest: [
+                {
+                  requests: [
+                    {
+                      tokenIn: {
+                        amount: "10000000",
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                      },
+                      tokenOut: {
+                        denom:
+                          "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                      },
+                    },
+                    {
+                      tokenIn: {
+                        amount: "20000000",
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                      },
+                      tokenOut: {
+                        denom:
+                          "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                      },
+                    },
+                  ],
+                },
+                {
+                  requests: [
+                    {
+                      tokenIn: {
+                        amount: "30000000",
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                      },
+                      tokenOut: {
+                        denom:
+                          "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                      },
+                    },
+                    {
+                      tokenIn: {
+                        amount: "50000000",
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                      },
+                      tokenOut: {
+                        denom:
+                          "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                      },
+                    },
+                  ],
+                },
+              ],
+            };
+            break;
+          default:
+            console.error("Invalid request type selected.");
+            return;
+        }
+
+        fetch("http://localhost:8080/aggregate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(jsonData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("response").textContent = JSON.stringify(
+              data,
+              null,
+              2
+            );
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            document.getElementById("response").textContent =
+              "Error: " + error.message;
+          });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cashflow Report</title>
+    <script src="./assets/js/tailwindcss-3.4.5.js"></script>
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <div id="rincian" class="flex-auto w-4/5 bg-white font-mono mx-auto p-4">
+      <h1 class="text-3xl font-bold mb-6 text-center">KAS RT 49</h1>
+      <div class="flex justify-end m-2">
+        <button
+          id="openModalBtn"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        >
+          Tambah Data
+        </button>
+      </div>
+
+      <!-- Initial Balance Table -->
+      <table
+        class="w-full table-auto border border-collapse border-gray-300 shadow-md mb-4"
+      >
+        <tr class="bg-gray-200">
+          <th class="py-2 border border-gray-300">SALDO AWAL</th>
+          <td id="initial-balance" class="border border-gray-300 text-center">
+            Rp 0
+          </td>
+        </tr>
+      </table>
+
+      <!-- Transactions Table -->
+      <div class="bg-white shadow-md rounded-lg overflow-x-auto mb-4">
+        <table class="min-w-full table-auto bg-white">
+          <thead>
+            <tr class="bg-gray-100">
+              <th
+                class="border py-3 px-4 uppercase font-semibold text-sm text-left"
+              >
+                No
+              </th>
+              <th
+                class="border py-3 px-4 uppercase font-semibold text-sm text-left"
+              >
+                Tanggal
+              </th>
+              <th
+                class="border py-3 px-4 uppercase font-semibold text-sm text-left"
+              >
+                Keterangan
+              </th>
+              <th
+                class="border py-3 px-4 uppercase font-semibold text-sm text-left"
+              >
+                Pemasukan
+              </th>
+              <th
+                class="border py-3 px-4 uppercase font-semibold text-sm text-left"
+              >
+                Pengeluaran
+              </th>
+              <th
+                class="border py-3 px-4 uppercase font-semibold text-sm text-left"
+              >
+                Saldo
+              </th>
+            </tr>
+          </thead>
+          <tbody id="transactions-body" class="text-gray-700">
+            <!-- Transactions will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Final Balance Table -->
+      <table
+        class="w-full table-auto border border-collapse border-gray-300 shadow-md"
+      >
+        <tr class="bg-gray-200">
+          <th class="py-2 border border-gray-300">SALDO AKHIR</th>
+          <td id="final-balance" class="border border-gray-300 text-center">
+            Rp 0
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Modal -->
+    <div
+      id="modal"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+    >
+      <div class="bg-white rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Tambah Data</h2>
+        <form id="addTransactionForm">
+          <div class="mb-4">
+            <label for="date" class="block text-gray-700 font-semibold mb-2"
+              >Tanggal</label
+            >
+            <input
+              type="date"
+              id="date"
+              name="date"
+              class="w-full border rounded-lg px-3 py-2"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="description"
+              class="block text-gray-700 font-semibold mb-2"
+              >Keterangan</label
+            >
+            <input
+              type="text"
+              id="description"
+              name="description"
+              class="w-full border rounded-lg px-3 py-2"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="transactionType"
+              class="block text-gray-700 font-semibold mb-2"
+              >Tipe Transaksi</label
+            >
+            <select
+              id="transactionType"
+              name="transaction_type"
+              class="w-full border rounded-lg px-3 py-2"
+              required
+            >
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="amount" class="block text-gray-700 font-semibold mb-2"
+              >Jumlah</label
+            >
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              class="w-full border rounded-lg px-3 py-2"
+              required
+            />
+          </div>
+          <div class="flex justify-end">
+            <button
+              type="button"
+              id="closeModalBtn"
+              class="text-gray-700 bg-gray-200 hover:bg-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+            >
+              Tambah
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function formatNumber(number) {
+        return number.toLocaleString("id-ID", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0"); // Add leading zero if necessary
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`; // Format as DD-MM-YYYY
+      }
+
+      async function fetchCashflowData() {
+        try {
+          const response = await fetch("http://localhost:8080/cashflow");
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+
+          // Populate initial balance
+          document.getElementById(
+            "initial-balance"
+          ).textContent = `Rp ${formatNumber(data.initial_balance)}`;
+
+          // Populate transactions
+          const transactionsBody = document.getElementById("transactions-body");
+          transactionsBody.innerHTML = ""; // Clear any existing rows
+          data.transactions.forEach((transaction) => {
+            const row = document.createElement("tr");
+            row.className = "hover:bg-gray-100";
+
+            // Determine Pemasukan and Pengeluaran based on transaction type
+            const pemasukan =
+              transaction.transaction_type === "income"
+                ? transaction.amount
+                : 0;
+            const pengeluaran =
+              transaction.transaction_type === "expense"
+                ? transaction.amount
+                : 0;
+
+            row.innerHTML = `
+                <td class="border py-3 px-4">${transaction.id}</td>
+                <td class="border py-3 px-4">${formatDate(
+                  transaction.date
+                )}</td>
+                <td class="border py-3 px-4">${transaction.description}</td>
+                <td class="border px-4 py-2 ${
+                  transaction.transaction_type === "income"
+                    ? "text-green-600"
+                    : "text-gray-500"
+                }">${formatNumber(pemasukan)}</td>
+                <td class="border px-4 py-2 ${
+                  transaction.transaction_type === "expense"
+                    ? "text-red-600"
+                    : "text-gray-500"
+                }">${formatNumber(pengeluaran)}</td>
+                <td class="border px-4 py-2">${formatNumber(
+                  transaction.current_balance
+                )}</td>
+              `;
+            transactionsBody.appendChild(row);
+          });
+
+          // Populate final balance
+          document.getElementById(
+            "final-balance"
+          ).textContent = `Rp ${formatNumber(data.final_balance)}`;
+        } catch (error) {
+          console.error("Error fetching cashflow data:", error);
+        }
+      }
+
+      // Fetch and display the data when the page loads
+      window.onload = fetchCashflowData;
+
+      // Modal functionality
+      const modal = document.getElementById("modal");
+      const openModalBtn = document.getElementById("openModalBtn");
+      const closeModalBtn = document.getElementById("closeModalBtn");
+      const addTransactionForm = document.getElementById("addTransactionForm");
+
+      openModalBtn.addEventListener("click", () => {
+        modal.classList.remove("hidden");
+      });
+
+      closeModalBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+      });
+
+      addTransactionForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(addTransactionForm);
+        const jsonData = Object.fromEntries(formData.entries());
+        jsonData.amount = parseFloat(jsonData.amount);
+
+        try {
+          const response = await fetch("http://localhost:8080/cashflow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(jsonData),
+          });
+
+          if (response.ok) {
+            modal.classList.add("hidden");
+            fetchCashflowData(); // Refresh data
+          } else {
+            console.error("Failed to add transaction:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error adding transaction:", error);
+        }
+      });
+    </script>
+  </body>
+</html>

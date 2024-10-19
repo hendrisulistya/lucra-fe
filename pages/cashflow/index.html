@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script src="../../assets/js/auth.js" type="module"></script>
+    <script src="../../assets/js/logout.js" type="module"></script>
+    <script src="../../assets/js/utils.js" type="module"></script>
+    <script src="../../assets/js/tailwindcss-3.4.10.js"></script>
+    <style>
+      /* initial body display*/
+      body {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <!-- Full-Width Header -->
+    <header class="bg-white shadow-md p-4 flex justify-between items-center">
+      <h1 class="text-3xl font-bold">Dashboard</h1>
+      <button
+        id="logoutButton"
+        class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-800"
+      >
+        Logout
+      </button>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="flex">
+      <!-- Side Navbar (1/4) -->
+      <aside class="w-1/6 bg-gray-500 text-white min-h-screen p-4">
+        <!-- Avatar and Username -->
+        <div class="flex items-center mb-6">
+          <img
+            src="https://img.icons8.com/?size=100&id=23242&format=png&color=000000"
+            alt="User Avatar"
+            class="w-12 h-12 rounded-full mr-3"
+          />
+          <div>
+            <p id="avatar-username" class="text-lg font-semibold">Username</p>
+            <p id="avatar-user-role" class="text-sm text-gray-300">User Role</p>
+          </div>
+        </div>
+
+        <!-- Menu -->
+        <h2 class="text-xl font-bold mb-4">Menu</h2>
+        <nav>
+          <ul class="space-y-2">
+            <li>
+              <a
+                id="transactions-link"
+                href="#"
+                class="block py-2 px-4 rounded hover:bg-blue-800"
+                >Transactions</a
+              >
+            </li>
+            <li>
+              <a
+                id="statistic-link"
+                href="#"
+                class="block py-2 px-4 rounded hover:bg-blue-800"
+                >Statistic</a
+              >
+            </li>
+            <li>
+              <a
+                id="settings-link"
+                href="#"
+                class="block py-2 px-4 rounded hover:bg-blue-800"
+                >Settings</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Body Content (3/4) -->
+      <main id="main-content" class="w-5/6 p-6">
+        <!-- Content will load here -->
+      </main>
+    </div>
+
+    <script type="module" src="../../assets/js/cashflow/main.js"></script>
+  </body>
+</html>
