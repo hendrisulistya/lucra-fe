@@ -129,7 +129,7 @@ export function displayTransactions(transactions, initialBalance) {
 
 // Function to add a new transaction
 export async function addTransaction(token, data) {
-  const response = await fetch(`http://${API_BASE_URL}/cashflow`, {
+  const response = await fetch(`${API_BASE_URL}/cashflow`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -154,17 +154,14 @@ export async function updateTransaction(token, transactionId, transactionData) {
     amount: parseFloat(transactionData.amount),
   };
 
-  const response = await fetch(
-    `http://${API_BASE_URL}/cashflow/${transactionId}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cashflow/${transactionId}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to update transaction");
@@ -175,13 +172,10 @@ export async function updateTransaction(token, transactionId, transactionData) {
 
 // Function to delete a transaction
 export async function deleteTransaction(token, transactionId) {
-  const response = await fetch(
-    `http://${API_BASE_URL}/cashflow/${transactionId}`,
-    {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cashflow/${transactionId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   if (!response.ok) {
     throw new Error("Failed to delete transaction");
