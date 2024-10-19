@@ -1,5 +1,5 @@
 // auth.js
-const API_BASE_URL = "http://localhost:8080"; // Base URL for your API
+import { API_BASE_URL } from "./constant.js";
 
 export async function validateToken() {
   const token = localStorage.getItem("token");

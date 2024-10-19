@@ -5,6 +5,7 @@ import {
   loadTransactions,
   updateTransaction,
 } from "../handler.js";
+import { API_BASE_URL } from "../../constant.js";
 
 // Function to open the update transaction modal
 window.openUpdateModal = function (transactionId, transactionData) {
@@ -126,14 +127,11 @@ export function setupUpdateTransactionModal() {
 // Fetch transaction data by ID (You should implement this based on your API structure)
 async function fetchTransactionData(transactionId) {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:8080/cashflow/${transactionId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cashflow/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (response.ok) {
     return await response.json();
   } else {

@@ -1,8 +1,10 @@
 // handler.js
 
+import { API_BASE_URL } from "../constant.js";
+
 // Function to fetch cashflow summary
 export async function loadSummary(token) {
-  const response = await fetch("http://localhost:8080/cashflow/summary", {
+  const response = await fetch(`${API_BASE_URL}/cashflow/summary`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -29,12 +31,9 @@ export function getTokenInfo() {
 
 // Function to fetch all transactions
 export async function getAllTransactions(token) {
-  const response = await fetch(
-    "http://localhost:8080/cashflow/getAllTransactions",
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cashflow/getAllTransactions`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   if (!response.ok) {
     throw new Error("Failed to fetch transactions");
@@ -130,7 +129,7 @@ export function displayTransactions(transactions, initialBalance) {
 
 // Function to add a new transaction
 export async function addTransaction(token, data) {
-  const response = await fetch("http://localhost:8080/cashflow", {
+  const response = await fetch(`http://${API_BASE_URL}/cashflow`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -156,7 +155,7 @@ export async function updateTransaction(token, transactionId, transactionData) {
   };
 
   const response = await fetch(
-    `http://localhost:8080/cashflow/${transactionId}`,
+    `http://${API_BASE_URL}/cashflow/${transactionId}`,
     {
       method: "PUT",
       headers: {
@@ -177,7 +176,7 @@ export async function updateTransaction(token, transactionId, transactionData) {
 // Function to delete a transaction
 export async function deleteTransaction(token, transactionId) {
   const response = await fetch(
-    `http://localhost:8080/cashflow/${transactionId}`,
+    `http://${API_BASE_URL}/cashflow/${transactionId}`,
     {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
