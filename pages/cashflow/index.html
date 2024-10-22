@@ -9,36 +9,65 @@
     <script src="../../assets/js/utils.js" type="module"></script>
     <script src="../../assets/js/tailwindcss-3.4.10.js"></script>
     <style>
-      /* initial body display*/
+      /* Set body and html height */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      /* Initial body display */
       body {
         display: none;
+      }
+
+      /* Ensures aside has full height */
+      #sideNavbar {
+        height: 100vh; /* Full height of viewport */
       }
     </style>
   </head>
   <body class="bg-gray-100 font-sans">
     <!-- Full-Width Header -->
-    <header class="bg-white shadow-md p-4 flex justify-between items-center">
+    <header
+      class="bg-white shadow-md p-4 flex justify-between items-center fixed w-full z-30"
+    >
+    <!-- Mobile Navbar Toggle Button -->
+    <button
+    id="mobileNavToggle"
+    class="block md:hidden text-gray-600"
+    aria-label="Toggle Navigation"
+  >
+    ☰
+  </button>
+  <button
+    id="logoutButton"
+    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-800"
+  >
+    Logout
+  </button>
+
+
       <h1 class="text-3xl font-bold">Dashboard</h1>
-      <button
-        id="logoutButton"
-        class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-800"
-      >
-        Logout
-      </button>
+      
     </header>
 
     <!-- Main Content Container -->
-    <div class="flex">
-      <!-- Side Navbar (1/4) -->
-      <aside class="w-1/6 bg-gray-500 text-white min-h-screen p-4">
+    <div class="flex pt-16">
+      <!-- Added padding-top to avoid content being hidden behind the fixed header -->
+      <!-- Side Navbar (1/6) -->
+      <aside
+        id="sideNavbar"
+        class="bg-gray-500 text-white p-4 fixed md:relative z-20 md:block transition-transform transform -translate-x-full md:translate-x-0"
+      >
         <!-- Avatar and Username -->
-        <div class="flex items-center mb-6">
+        <div class="flex flex-col md:flex-row items-center mb-6">
           <img
             src="https://img.icons8.com/?size=100&id=23242&format=png&color=000000"
             alt="User Avatar"
-            class="w-12 h-12 rounded-full mr-3"
+            class="w-16 h-16 md:w-12 md:h-12 rounded-full mb-3 md:mb-0 md:mr-3"
           />
-          <div>
+          <div class="text-center md:text-left">
             <p id="avatar-username" class="text-lg font-semibold">Username</p>
             <p id="avatar-user-role" class="text-sm text-gray-300">User Role</p>
           </div>
@@ -76,12 +105,75 @@
         </nav>
       </aside>
 
-      <!-- Body Content (3/4) -->
-      <main id="main-content" class="w-5/6 p-6">
+      <!-- Body Content (5/6) -->
+      <main class="ml-0 md:ml-1/6 w-full p-6 md:w-full">
+        <button id="downloadButton" class="bg-green-500 text-white px-4 py-2 rounded mb-4">
+          Download
+        </button>
         <!-- Content will load here -->
+        <div id="main-content">
+          <p>Your main content goes here.</p>
+        </div>
       </main>
     </div>
 
+    <script type="module">
+      // Mobile navigation toggle
+      const mobileNavToggle = document.getElementById("mobileNavToggle");
+      const sideNavbar = document.getElementById("sideNavbar");
+
+      mobileNavToggle.addEventListener("click", () => {
+        sideNavbar.classList.toggle("-translate-x-full");
+      });
+
+      // Adjust aside height based on main content height
+      const adjustSidebarHeight = () => {
+        const mainContentHeight =
+          document.getElementById("main-content").scrollHeight;
+        sideNavbar.style.height = `${Math.max(
+          window.innerHeight,
+          mainContentHeight
+        )}px`;
+      };
+
+      // Call the function initially and on window resize
+      adjustSidebarHeight();
+      window.addEventListener("resize", adjustSidebarHeight);
+
+      // Download functionality
+  
+      document.getElementById('downloadButton').addEventListener('click', async () => {
+        try {
+            // Get the token from localStorage
+            const token = localStorage.getItem('token');
+
+            const response = await fetch('http://localhost:8080/cashflow/download', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                },
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            a.href = url;
+            a.download = 'cashflow.png';
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            URL.revokeObjectURL(url);
+            a.remove();
+        } catch (error) {
+            console.error('Error downloading cashflow image:', error);
+        }
+    });
+    </script>
+    </script>
     <script type="module" src="../../assets/js/cashflow/main.js"></script>
   </body>
 </html>
