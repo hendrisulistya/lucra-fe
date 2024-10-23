@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
     <script src="../../assets/js/tailwindcss-3.4.10.js"></script>
+
     <style>
       #invalid-banner {
         display: none;
@@ -62,78 +63,49 @@
       </div>
     </div>
 
-    <script>
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", async function (event) {
+    <script type="module">
+      import { login } from "../../assets/js/auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const togglePasswordButton = document.getElementById("togglePassword");
+        const invalidBanner = document.getElementById("invalid-banner");
+
+        // Login form submit event handler
+        loginForm.onsubmit = async (event) => {
           event.preventDefault();
-
-          const usernameInput = document.getElementById("username");
-          const passwordInput = document.getElementById("password");
-
           const username = document.getElementById("username").value;
           const password = document.getElementById("password").value;
 
           try {
-            const response = await fetch("http://localhost:8080/login", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ username, password }),
-            });
-
-            if (!response.ok) {
-              // Display the invalid banner
-              document.getElementById("invalid-banner").style.display = "block";
-
-              // Clear the input fields
-              usernameInput.value = "";
-              passwordInput.value = "";
-
-              throw new Error("Login failed");
-            }
-
-            const data = await response.json();
-            console.log("Login successful, token:", data.token);
-
-            // Store the token in localStorage or sessionStorage
-            localStorage.setItem("token", data.token);
-
-            // Check for a return URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const returnUrl = urlParams.get("returnUrl");
-
-            if (returnUrl) {
-              // Redirect to the return URL if it exists
-              window.location.href = returnUrl;
-            } else {
-              // Otherwise, redirect to a default page (like the dashboard)
-              window.location.href = "/pages/cashflow";
-            }
+            await login(username, password);
           } catch (error) {
-            console.error("Error:", error);
+            // Display the error message in the #invalid-banner
+            const invalidBanner = document.getElementById("invalid-banner");
+            invalidBanner.textContent = "Invalid username or password";
+            invalidBanner.style.display = "block"; // Show the banner
           }
-        });
+        };
 
-      document
-        .getElementById("togglePassword")
-        .addEventListener("click", function () {
+        // Toggle password visibility
+        togglePasswordButton.addEventListener("click", function () {
           const passwordInput = document.getElementById("password");
-          const toggleButton = document.getElementById("togglePassword");
 
           // Toggle the type attribute
           const isPasswordVisible = passwordInput.type === "password";
           passwordInput.type = isPasswordVisible ? "text" : "password";
 
           // Update the button text
-          toggleButton.textContent = isPasswordVisible ? "Hide" : "Show";
+          togglePasswordButton.textContent = isPasswordVisible
+            ? "Hide"
+            : "Show";
         });
 
-      // Hide the invalid banner when the user interacts with the input fields
-      document.querySelectorAll("#username, #password").forEach((input) => {
-        input.addEventListener("input", () => {
-          document.querySelector("#invalid-banner").style.display = "none";
+        // Hide the invalid banner when the user interacts with the input fields
+        document.querySelectorAll("#username, #password").forEach((input) => {
+          input.addEventListener("input", () => {
+            invalidBanner.style.display = "none";
+          });
         });
       });
     </script>

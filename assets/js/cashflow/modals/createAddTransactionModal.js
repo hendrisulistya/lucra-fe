@@ -19,7 +19,8 @@ export function setupAddTransactionModal() {
     "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden";
 
   const modalContent = document.createElement("div");
-  modalContent.className = "bg-white rounded-lg p-6 w-1/3";
+  modalContent.className =
+    "bg-white rounded-lg p-6 w-full max-w-md mx-4 md:w-1/3"; // Updated for responsiveness
 
   const closeModalBtn = document.createElement("button");
   closeModalBtn.id = "closeModalBtn";
@@ -28,7 +29,7 @@ export function setupAddTransactionModal() {
   closeModalBtn.innerHTML = "&times;";
 
   const title = document.createElement("h2");
-  title.className = "text-2xl font-bold mb-4";
+  title.className = "text-2xl font-bold mb-4 text-center"; // Center the title for better mobile appearance
   title.textContent = "Tambah Data Transaksi";
 
   const addTransactionForm = document.createElement("form");
@@ -70,13 +71,25 @@ export function setupAddTransactionModal() {
       input = document.createElement("select");
       input.name = field.name;
       input.id = field.name;
-      input.className = "mt-1 p-2 w-full border border-gray-300 rounded-md";
+      input.className =
+        "block mt-1 p-2 w-full border border-gray-300 rounded-md";
+
+      // Adding a relative class to the parent container to position the dropdown correctly
+      const fieldContainer = document.createElement("div");
+      fieldContainer.className = "mb-4 relative";
+
+      // Create and append each option to the select element
       field.options.forEach((option) => {
         const opt = document.createElement("option");
         opt.value = option.value;
         opt.textContent = option.text;
         input.appendChild(opt);
       });
+
+      // Append the label and select input to the container
+      fieldContainer.appendChild(label);
+      fieldContainer.appendChild(input);
+      addTransactionForm.appendChild(fieldContainer);
     } else {
       input = document.createElement("input");
       input.type = field.type;
@@ -85,13 +98,10 @@ export function setupAddTransactionModal() {
       input.className = "mt-1 p-2 w-full border border-gray-300 rounded-md";
       if (field.required) input.required = true;
       if (field.label === "Jumlah") {
-        input.maxLength = 10; // Prevent entering more than 9 characters
+        input.maxLength = 10;
         input.addEventListener("input", (e) => {
-          // Remove all non-digit characters except for commas
           const value = e.target.value.replace(/[^0-9]/g, "");
-          // Limit to 8 digits
           const limitedValue = value.slice(0, 10);
-          // Format the number with commas
           e.target.value = formatNumberWithCommas(limitedValue);
         });
       }
@@ -124,9 +134,9 @@ export function setupAddTransactionModal() {
   modalContent.appendChild(title);
   modalContent.appendChild(addTransactionForm);
   addModal.appendChild(modalContent);
-  document.body.appendChild(addModal); // Append the modal to the body
+  document.body.appendChild(addModal);
 
-  // Function to open the Add Transaction modal
+  // Open the Add Transaction modal
   const openAddModalBtn = document.getElementById("btnAddTransaction");
   openAddModalBtn.addEventListener("click", () => {
     addModal.classList.remove("hidden");
@@ -137,18 +147,16 @@ export function setupAddTransactionModal() {
     addModal.classList.add("hidden");
   });
 
-  // Handle form submission for adding a transaction
+  // Handle form submission
   addTransactionForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
-    // Get form values
     const date = addTransactionForm.date.value;
     const description = addTransactionForm.description.value;
     const transaction_type = addTransactionForm.transactionType.value;
     const rawAmount = addTransactionForm.amount.value.replace(/,/g, "");
     const amount = parseFloat(rawAmount);
 
-    // Create a new transaction object
     const newTransaction = {
       date,
       description,
@@ -158,13 +166,9 @@ export function setupAddTransactionModal() {
 
     try {
       const token = localStorage.getItem("token");
-      await addTransaction(token, newTransaction); // Use the imported addTransaction function
-
-      // Reset the form
+      await addTransaction(token, newTransaction);
       addTransactionForm.reset();
-      // Hide the modal
       addModal.classList.add("hidden");
-      // Reload transactions
       const initialBalance = await loadSummary(token);
       await loadTransactions(token, initialBalance);
       showSuccessModal("Transaction added successfully");

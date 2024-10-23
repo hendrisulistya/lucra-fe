@@ -29,6 +29,23 @@ export async function validateToken() {
   }
 }
 
+export async function login(username, password) {
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(errorMessage || "Login failed");
+  }
+
+  const { token } = await response.json();
+  localStorage.setItem("token", token);
+  window.location.href = "index.html";
+}
+
 export async function logout() {
   // Clear token
   localStorage.removeItem("token");
