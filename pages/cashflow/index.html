@@ -32,22 +32,21 @@
     <header
       class="bg-white shadow-md p-4 flex justify-between items-center fixed w-full z-30"
     >
-    
-    <!-- Mobile Navbar Toggle Button -->
-    <button
-    id="mobileNavToggle"
-    class="block md:hidden text-gray-600"
-    aria-label="Toggle Navigation"
-  >
-    ☰
-  </button>
-  <h1 class="text-3xl font-bold">Dashboard</h1>
-  <button
-    id="logoutButton"
-    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-800 transform transition-transform duration-300 md:scale-100 scale-75"
-  >
-    Logout
-</button>
+      <!-- Mobile Navbar Toggle Button -->
+      <button
+        id="mobileNavToggle"
+        class="block md:hidden text-gray-600"
+        aria-label="Toggle Navigation"
+      >
+        ☰
+      </button>
+      <h1 class="text-3xl font-bold">Dashboard</h1>
+      <button
+        id="logoutButton"
+        class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-800 transform transition-transform duration-300 md:scale-100 scale-75"
+      >
+        Logout
+      </button>
     </header>
 
     <!-- Main Content Container -->
@@ -105,7 +104,10 @@
 
       <!-- Body Content (5/6) -->
       <main class="ml-0 md:ml-1/6 w-full p-6 md:w-full">
-        <button id="downloadButton" class="bg-green-500 text-white px-4 py-2 rounded mb-4 md:scale-100 scale-75">
+        <button
+          id="downloadButton"
+          class="bg-green-500 text-white px-4 py-2 rounded mb-4 md:scale-100 scale-75"
+        >
           Download
         </button>
         <!-- Content will load here -->
@@ -116,6 +118,8 @@
     </div>
 
     <script type="module">
+      import { downloadTransaction } from "../../assets/js/cashflow/handler.js";
+
       // Mobile navigation toggle
       const mobileNavToggle = document.getElementById("mobileNavToggle");
       const sideNavbar = document.getElementById("sideNavbar");
@@ -139,38 +143,9 @@
       window.addEventListener("resize", adjustSidebarHeight);
 
       // Download functionality
-  
-      document.getElementById('downloadButton').addEventListener('click', async () => {
-        try {
-            // Get the token from localStorage
-            const token = localStorage.getItem('token');
-
-            const response = await fetch('http://localhost:8080/cashflow/download', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
-                },
-            });
-
-            if (!response.ok) throw new Error('Network response was not ok');
-
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-
-            a.href = url;
-            a.download = 'cashflow.png';
-            document.body.appendChild(a);
-            a.click();
-
-            // Cleanup
-            URL.revokeObjectURL(url);
-            a.remove();
-        } catch (error) {
-            console.error('Error downloading cashflow image:', error);
-        }
-    });
-    </script>
+      document
+        .getElementById("downloadButton")
+        .addEventListener("click", downloadTransaction);
     </script>
     <script type="module" src="../../assets/js/cashflow/main.js"></script>
   </body>

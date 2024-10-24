@@ -181,3 +181,63 @@ export async function deleteTransaction(token, transactionId) {
     throw new Error("Failed to delete transaction");
   }
 }
+
+export async function downloadTransaction() {
+  // Create a full-screen modal element
+  const modalOverlay = document.createElement("div");
+  modalOverlay.className =
+    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"; // Full-screen overlay with dim background
+
+  const modalContent = document.createElement("div");
+  modalContent.className =
+    "bg-white text-black p-6 rounded shadow-lg text-center"; // Modal content styling
+  modalContent.textContent = "Downloading, please wait...";
+
+  // Append the content to the overlay
+  modalOverlay.appendChild(modalContent);
+  document.body.appendChild(modalOverlay);
+
+  try {
+    // Get the token from localStorage
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_BASE_URL}/cashflow/download`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      },
+    });
+
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "kas-rt49.png";
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    URL.revokeObjectURL(url);
+    a.remove();
+
+    // Update the modal message for success
+    modalContent.textContent = "Download completed!";
+    modalContent.className =
+      "bg-green-500 text-white p-6 rounded shadow-lg text-center"; // Change to success style
+  } catch (error) {
+    console.error("Error downloading cashflow image:", error);
+
+    // Update the modal message for failure
+    modalContent.textContent = "Failed to download. Please try again.";
+    modalContent.className =
+      "bg-red-500 text-white p-6 rounded shadow-lg text-center"; // Change to error style
+  } finally {
+    // Automatically remove the modal after 3 seconds
+    setTimeout(() => {
+      modalOverlay.remove();
+    }, 3000);
+  }
+}
