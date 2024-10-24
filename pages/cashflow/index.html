@@ -106,7 +106,7 @@
       <main class="ml-0 md:ml-1/6 w-full p-6 md:w-full">
         <button
           id="downloadButton"
-          class="bg-green-500 text-white px-4 py-2 rounded mb-4 md:scale-100 scale-75"
+          class="bg-green-500 text-white px-4 py-2 rounded mb-4 md:scale-75"
         >
           Download
         </button>
@@ -143,9 +143,10 @@
       window.addEventListener("resize", adjustSidebarHeight);
 
       // Download functionality
-      document
-        .getElementById("downloadButton")
-        .addEventListener("click", downloadTransaction);
+      const downloadButton = document.getElementById("downloadButton");
+
+      downloadButton.addEventListener("click", downloadTransaction);
+      downloadButton.addEventListener("touchstart", downloadTransaction);
     </script>
     <script type="module" src="../../assets/js/cashflow/main.js"></script>
   </body>
